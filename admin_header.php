@@ -10,20 +10,29 @@
       }
    }
 ?>
-
-<header class="header">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
+   <link rel="stylesheet" href="css/admin_style.css">
+</head>
+<body>
+   <header class="header">
 
    <div class="flex">
 
       <a href="home.php" class="logo">Quản lý nhà kho</a>
 
-      <nav class="navbar">
+      <nav class="navbar" style="min-height: 0; margin-bottom: 0px">
          <a href="home.php">Trang chủ</a>
          <a href="admin_products.php">Sản phẩm</a>
          <a href="admin_category.php">Danh mục</a>
          <a href="admin_supplier.php">Nhà cung cấp</a>
          <a href="admin_orders.php">Đơn hàng</a>
          <a href="admin_customers.php">Khách hàng</a>
+         <a href="admin_shippingorders.php">Đơn vận chuyển</a>
          <a href="admin_statistical.php">Thống kê</a>
       </nav>
 
@@ -42,3 +51,5 @@
    </div>
 
 </header>
+</body>
+</html>
