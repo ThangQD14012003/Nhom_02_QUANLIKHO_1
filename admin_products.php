@@ -27,7 +27,7 @@
       $image_tmp_name = $_FILES['image']['tmp_name'];
       $image_folder = 'uploaded_img/'.$image;
 
-      $select_product_name = mysqli_query($conn, "SELECT name FROM products WHERE name = '$name'") or die('query failed');//truy vấn kiểm tra sách đã tồn tại chưa
+      $select_product_name = mysqli_query($conn, "SELECT name FROM `products` WHERE name = '$name'") or die('query failed');//truy vấn kiểm tra sách đã tồn tại chưa
 
       if(mysqli_num_rows($select_product_name) > 0){
          $message[] = 'Sản phẩm đã tồn tại.';
@@ -49,10 +49,10 @@
 
    if(isset($_GET['delete'])){//xóa sản phẩm từ onclick <a></a> href='delete'
       $delete_id = $_GET['delete'];
-      $delete_image_query = mysqli_query($conn, "SELECT image FROM products WHERE id = '$delete_id'") or die('query failed');
+      $delete_image_query = mysqli_query($conn, "SELECT image FROM `products` WHERE id = '$delete_id'") or die('query failed');
       $fetch_delete_image = mysqli_fetch_assoc($delete_image_query);
       unlink('uploaded_img/'.$fetch_delete_image['image']);//xóa file ảnh của sản phẩm cần xóa
-      mysqli_query($conn, "DELETE FROM products WHERE id = '$delete_id'") or die('query failed');
+      mysqli_query($conn, "DELETE FROM `products` WHERE id = '$delete_id'") or die('query failed');
       header('location:admin_products.php');
    }
 
@@ -68,7 +68,7 @@
       $update_quantity = $_POST['update_quantity'];
       $update_describe = $_POST['update_describe'];
 
-      mysqli_query($conn, "UPDATE products SET name = '$update_name', trademark = '$update_trademark', cate_id='$update_category', price = '$update_price', newprice='$update_newprice', discount='$update_discount', quantity='$update_quantity', describes='$update_describe' WHERE id = '$update_p_id'") or die('query failed');
+      mysqli_query($conn, "UPDATE `products` SET name = '$update_name', trademark = '$update_trademark', cate_id='$update_category', price = '$update_price', newprice='$update_newprice', discount='$update_discount', quantity='$update_quantity', describes='$update_describe' WHERE id = '$update_p_id'") or die('query failed');
 
       $update_image = $_FILES['update_image']['name'];
       $update_image_tmp_name = $_FILES['update_image']['tmp_name'];
@@ -80,7 +80,7 @@
          if($update_image_size > 2000000){
             $message[] = 'image file size is too large';
          }else{
-            mysqli_query($conn, "UPDATE products SET image = '$update_image' WHERE id = '$update_p_id'") or die('query failed');
+            mysqli_query($conn, "UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'") or die('query failed');
             move_uploaded_file($update_image_tmp_name, $update_folder);//lưu file ảnh mới
             unlink('uploaded_img/'.$update_old_image);//xóa file ảnh cũ
          }
@@ -102,6 +102,7 @@
 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    <link rel="stylesheet" href="css/admin_style.css">
+   <link rel="stylesheet" href="css/add.css">
    <style>
       .search {
          display: flex;
@@ -129,13 +130,13 @@
 
    <h1 class="title">Sản  phẩm</h1>
 
-   <form action="" method="post" enctype="multipart/form-data">
+   <form class="add_pr" action="" method="post" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
       <input type="text" name="name" class="box" placeholder="Tên sản phẩm" required>
       <input type="text" name="trademark" class="box" placeholder="Thương hiệu" required>
       <select name="category" class="box">
          <?php
-            $select_category= mysqli_query($conn, "SELECT * FROM categorys") or die('Query failed');
+            $select_category= mysqli_query($conn, "SELECT * FROM `categorys`") or die('Query failed');
             if(mysqli_num_rows($select_category)>0){
                while($fetch_category=mysqli_fetch_assoc($select_category)){
                   echo "<option value='" . $fetch_category['id'] . "'>".$fetch_category['name']."</option>";
@@ -148,7 +149,7 @@
       </select>
       <select name="supplier" class="box">
          <?php
-            $select_supplier= mysqli_query($conn, "SELECT * FROM suppliers") or die('Query failed');
+            $select_supplier= mysqli_query($conn, "SELECT * FROM `suppliers`") or die('Query failed');
             if(mysqli_num_rows($select_supplier)>0){
                while($fetch_supplier=mysqli_fetch_assoc($select_supplier)){
                   echo "<option value='" . $fetch_supplier['id'] . "'>".$fetch_supplier['name']."</option>";
@@ -163,10 +164,16 @@
       <input type="number" min="1" name="quantity" class="box" placeholder="Số lượng" required>
       <input type="text" name="describe" class="box" placeholder="Mô tả" required>
       <input type="file" name="image" accept="image/jpg, image/jpeg, image/png" class="box" required>
-      <input type="submit" value="Thêm" name="add_product" class="btn">
+      <input onclick="added_pr()" type="submit" value="Thêm" name="add_product" class="btn added_pr">
+      <!-- <input onclick="cancel_added_pr()" type="submit" value="Hủy" name="" class="btn cancel_add"> -->
    </form>
 
 </section>
+<form class="search" method="GET">
+        <input type="text" name="search" placeholder="Nhập tên sản phẩm cần tìm..." value="<?php if(isset($_GET['search'])) echo $_GET['search'] ?>">
+        <button type="submit" class="btn">Tìm kiếm</button>
+</form>
+<button onclick="addActive()" class="btn btn-info" style="margin-bottom: 10px; margin-left: 60px;">Thêm mới</button>
 <section class="show-products">
 
    <div class="box-container">
@@ -183,13 +190,13 @@
                   <div class="sub-name">Thương hiệu: <?php echo $row['trademark']; ?></div>
                   <?php
                   $cate_id =  $row['cate_id'];
-                      $result= mysqli_query($conn, "SELECT * FROM categorys WHERE id = $cate_id") or die('Query failed');
+                      $result= mysqli_query($conn, "SELECT * FROM `categorys` WHERE id = $cate_id") or die('Query failed');
                       $cate_name = mysqli_fetch_assoc($result)
                    ?>
                   <div class="sub-name">Danh mục: <?php echo $cate_name['name']; ?></div>
                   <?php
                   $supplier_id =  $row['supplier_id'];
-                      $result= mysqli_query($conn, "SELECT * FROM suppliers WHERE id = $supplier_id") or die('Query failed');
+                      $result= mysqli_query($conn, "SELECT * FROM `suppliers` WHERE id = $supplier_id") or die('Query failed');
                       $sup_name = mysqli_fetch_assoc($result)
                    ?>
                   <div class="sub-name">Nhà cung cấp: <?php echo $sup_name['name']; ?></div>
@@ -207,7 +214,7 @@
          ?>
    <?php  } else { ?>
       <?php
-         $select_products = mysqli_query($conn, "SELECT * FROM products") or die('query failed');
+         $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
          if(mysqli_num_rows($select_products) > 0){
             while($fetch_products = mysqli_fetch_assoc($select_products)){
       ?>
@@ -217,13 +224,13 @@
                   <div class="sub-name">Thương hiệu: <?php echo $fetch_products['trademark']; ?></div>
                   <?php
                   $cate_id =  $fetch_products['cate_id'];
-                      $result= mysqli_query($conn, "SELECT * FROM categorys WHERE id = $cate_id") or die('Query failed');
+                      $result= mysqli_query($conn, "SELECT * FROM `categorys` WHERE id = $cate_id") or die('Query failed');
                       $cate_name = mysqli_fetch_assoc($result)
                    ?>
                   <div class="sub-name">Danh mục: <?php echo $cate_name['name']; ?></div>
                   <?php
                   $supplier_id =  $fetch_products['supplier_id'];
-                      $result= mysqli_query($conn, "SELECT * FROM suppliers WHERE id = $supplier_id") or die('Query failed');
+                      $result= mysqli_query($conn, "SELECT * FROM `suppliers` WHERE id = $supplier_id") or die('Query failed');
                       $sup_name = mysqli_fetch_assoc($result)
                    ?>
                   <div class="sub-name">Nhà cung cấp: <?php echo $sup_name['name']; ?></div>
@@ -244,16 +251,16 @@
 
 </section>
 
-<section class="edit-product-form" style="height: 940px;">
+<section class="edit-product-form">
 
    <?php
       if(isset($_GET['update'])){//hiện form update từ onclick <a></a> href='update'
          $update_id = $_GET['update'];
-         $update_query = mysqli_query($conn, "SELECT * FROM products WHERE id = '$update_id'") or die('query failed');
+         $update_query = mysqli_query($conn, "SELECT * FROM `products` WHERE id = '$update_id'") or die('query failed');
          if(mysqli_num_rows($update_query) > 0){
             while($fetch_update = mysqli_fetch_assoc($update_query)){
    ?>
-               <form style="height: 1000px;" action="" method="post" enctype="multipart/form-data">
+               <form action="" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">
                   <input type="hidden" name="update_old_image" value="<?php echo $fetch_update['image']; ?>">
                   <input type="hidden" name="update_trademark" value="<?php echo $fetch_update['trademark']; ?>">
@@ -263,12 +270,12 @@
                   <select name="update_category" class="box">
                   <?php
                   $cate_id =  $fetch_update['cate_id'];
-                      $result= mysqli_query($conn, "SELECT * FROM categorys WHERE id = $cate_id") or die('Query failed');
+                      $result= mysqli_query($conn, "SELECT * FROM `categorys` WHERE id = $cate_id") or die('Query failed');
                       $cate_name = mysqli_fetch_assoc($result)
                    ?>
                      <option value="<?php echo $cate_name['id']?>"><?=$cate_name['name']?></option>
                      <?php
-                        $select_category= mysqli_query($conn, "SELECT * FROM categorys") or die('Truy vấn lỗi');
+                        $select_category= mysqli_query($conn, "SELECT * FROM `categorys`") or die('Truy vấn lỗi');
                         while($fetch_category=mysqli_fetch_assoc($select_category)){
                            if($fetch_category['name']!=$fetch_update['category']){
                               echo"<option  value='" . $fetch_category['id'] . "'>".$fetch_category['name']."</option>";
@@ -294,6 +301,7 @@
 <?php include 'footer.php'; ?>
 
 <script src="js/admin_script.js"></script>
+<script src="js/add.js" ></script>
 
 </body>
 </html>
