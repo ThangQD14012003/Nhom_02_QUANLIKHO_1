@@ -15,7 +15,7 @@
       $name = mysqli_real_escape_string($conn, $_POST['name']);
       $describes= mysqli_real_escape_string($conn, $_POST['describes']);
 
-      $select_category_name = mysqli_query($conn, "SELECT name FROM categorys WHERE name = '$name'") or die('query failed');//truy vấn để kiểm tra loại sách đã tồn tại chưa
+      $select_category_name = mysqli_query($conn, "SELECT name FROM `categorys` WHERE name = '$name'") or die('query failed');//truy vấn để kiểm tra loại sách đã tồn tại chưa
 
       if(mysqli_num_rows($select_category_name) > 0){// tồn tại rồi thì thông báo
          $message[] = 'Danh mục đã tồn tại.';
@@ -33,7 +33,7 @@
    if(isset($_GET['delete'])){//Xóa loại sách từ onclick <a></a> có href='delete'
       $delete_id = $_GET['delete'];
       try {
-         mysqli_query($conn, "DELETE FROM categorys WHERE id = '$delete_id'") or die('query failed');
+         mysqli_query($conn, "DELETE FROM `categorys` WHERE id = '$delete_id'") or die('query failed');
          $message[] = "Xóa danh mục thành công";
       } catch (Exception) {
          $message[] = "Xóa danh mục không thành công";
@@ -47,7 +47,7 @@
       $update_name = $_POST['update_name'];
       $update_describes = $_POST['update_describes'];
 
-      mysqli_query($conn, "UPDATE categorys SET name = '$update_name', describes = '$update_describes' WHERE id = '$update_p_id'") or die('query failed');
+      mysqli_query($conn, "UPDATE `categorys` SET name = '$update_name', describes = '$update_describes' WHERE id = '$update_p_id'") or die('query failed');
 
       header('location:admin_category.php');
 
@@ -66,6 +66,8 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
    <link rel="stylesheet" href="css/admin_style.css">
+   <link rel="stylesheet" href="css/add.css">
+   <link rel="icon" href="uploaded_img/logo.jpg">
    <style>
       table {
          font-size: 15px;
@@ -96,7 +98,7 @@
 
    <h1 class="title">Danh mục sản phẩm</h1>
 
-   <form action="" method="post" enctype="multipart/form-data">
+   <form class="add_sup" method="post" enctype="multipart/form-data">
       <h3>Thêm danh mục</h3>
       <input type="text" name="name" class="box" placeholder="Danh mục" required>
       <input type="text" name="describes" class="box" placeholder="Mô tả" required>
@@ -105,8 +107,11 @@
 
 </section>
 
-
-
+<form class="search" method="GET">
+        <input type="text" name="search" placeholder="Nhập tên danh mục cần tìm..." value="<?php if(isset($_GET['search'])) echo $_GET['search'] ?>">
+        <button type="submit" class="btn">Tìm kiếm</button>
+</form>
+<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px; margin-left: 120px; padding: 8px; font-size: 16px;" class="btn btn-info" >Thêm mới</button>
 <section class="show-products">
 
    <div class="container">
@@ -121,7 +126,30 @@
             </tr>
          </thead>
          <tbody>
-         
+         <?php
+            $search = isset($_GET['search']) ? $_GET['search'] : '';
+            $sql = mysqli_query($conn, "SELECT * FROM categorys WHERE name LIKE '%$search%'");
+               if(mysqli_num_rows($sql) > 0){
+                  while ($row = mysqli_fetch_array($sql)) {
+             ?>
+            <tr>
+               <th scope="row"><?php echo $row['id']; ?></th>
+               <td><?php echo $row['name']; ?></td>
+               <td><?php echo $row['describes']; ?></td>
+               <td>
+                  <a href="admin_category.php?update=<?php echo $row['id']; ?>" class="">Sửa</a> | 
+                  <a href="admin_category.php?delete=<?php echo $row['id']; ?>" class="" onclick="return confirm('Xóa danh mục này?');">Xóa</a>
+               </td>
+            </tr>
+         <?php
+                  }
+            } else {
+               echo "<tr>"; echo "<td colspan=6 align=center>"; echo '<p style="font-size: 25px;">Không có nhà cung cấp phù hợp với yêu cầu tìm kiếm của bạn</p>'; echo "</td>"; echo "</tr>";
+            }
+         ?>
+         </tbody>
+      </table>
+   <?php  } else { ?>
       <table class="table table-striped">
          <thead>
             <tr>
@@ -133,7 +161,7 @@
          </thead>
          <tbody>
          <?php
-            $select_categories = mysqli_query($conn, "SELECT * FROM categorys") or die('query failed');
+            $select_categories = mysqli_query($conn, "SELECT * FROM `categorys`") or die('query failed');
             while($fetch_cate = mysqli_fetch_assoc($select_categories)){
          ?>
             <tr>
@@ -160,7 +188,7 @@
    <?php
       if(isset($_GET['update'])){//Hiện form cập nhật thông tin loại sách từ <a></a> có href='update'
          $update_id = $_GET['update'];
-         $update_query = mysqli_query($conn, "SELECT * FROM categorys WHERE id = '$update_id'") or die('query failed');//lấy ra thông tin loại sách cần cập nhật
+         $update_query = mysqli_query($conn, "SELECT * FROM `categorys` WHERE id = '$update_id'") or die('query failed');//lấy ra thông tin loại sách cần cập nhật
          if(mysqli_num_rows($update_query) > 0){
             while($fetch_update = mysqli_fetch_assoc($update_query)){
    ?>
@@ -183,6 +211,6 @@
 <?php include 'footer.php'; ?>
 
 <script src="js/admin_script.js"></script>
-
+<script src="js/add.js" ></script>
 </body>
 </html>

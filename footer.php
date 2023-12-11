@@ -82,6 +82,6 @@
 
    </div>
 
-   <p class="credit"> &copy; Copyright  @ <?php echo date('Y'); ?> by <span> Quang Thắng</span> </p>
+   <p class="credit"> &copy; Copyright  @ <?php echo date('Y'); ?> by <span> Nhóm 2</span> </p>
 
 </section>
