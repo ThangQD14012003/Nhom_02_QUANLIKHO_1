@@ -36,7 +36,7 @@
 
       <div class="box">
          <?php 
-            $select_orders = mysqli_query($conn, "SELECT * FROM orders") or die('query failed');
+            $select_orders = mysqli_query($conn, "SELECT * FROM `orders`") or die('query failed');
             $number_of_orders = mysqli_num_rows($select_orders);
          ?>
          <h3><?php echo $number_of_orders; ?></h3>
@@ -45,7 +45,7 @@
 
       <div class="box">
          <?php 
-            $select_products = mysqli_query($conn, "SELECT * FROM products") or die('query failed');
+            $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
             $number_of_products = mysqli_num_rows($select_products);
          ?>
          <h3><?php echo $number_of_products; ?></h3>
@@ -54,7 +54,7 @@
       
       <div class="box">
          <?php 
-            $select_cate = mysqli_query($conn, "SELECT * FROM categorys") or die('query failed');
+            $select_cate = mysqli_query($conn, "SELECT * FROM `categorys`") or die('query failed');
             $number_of_cate = mysqli_num_rows($select_cate);
          ?>
          <h3><?php echo $number_of_cate; ?></h3>
@@ -63,7 +63,7 @@
       
       <div class="box">
          <?php 
-            $select_suppliers = mysqli_query($conn, "SELECT * FROM suppliers") or die('query failed');
+            $select_suppliers = mysqli_query($conn, "SELECT * FROM `suppliers`") or die('query failed');
             $number_of_sup = mysqli_num_rows($select_suppliers);
          ?>
          <h3><?php echo $number_of_sup; ?></h3>
@@ -72,7 +72,7 @@
 
       <div class="box">
          <?php 
-            $select_users = mysqli_query($conn, "SELECT * FROM customers") or die('query failed');
+            $select_users = mysqli_query($conn, "SELECT * FROM `customers`") or die('query failed');
             $number_of_users = mysqli_num_rows($select_users);
          ?>
          <h3><?php echo $number_of_users; ?></h3>

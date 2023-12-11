@@ -10,7 +10,7 @@
       header('location:login.php');
    };
 
-   if(isset($_POST['add_order'])){//thêm sách mới từ submit form name='add_order'
+   if(isset($_POST['add_order'])){//thêm mới từ submit form name='add_order'
 
       $customer_id = $_POST['customer_id'];
       $product_id = $_POST['product_id'];
@@ -20,7 +20,7 @@
       $address = mysqli_real_escape_string($conn, $_POST['address']);
       $note = mysqli_real_escape_string($conn, $_POST['note']);
       $product_quantity = $_POST['quantity'];
-      $select_product= mysqli_query($conn, "SELECT * FROM products WHERE id = $product_id") or die('Query failed');
+      $select_product= mysqli_query($conn, "SELECT * FROM `products` WHERE id = $product_id") or die('Query failed');
       $fetch_product=mysqli_fetch_assoc($select_product);
       $product_name = $fetch_product['name'];
       $total_price = $fetch_product['newprice'] * $product_quantity;   
@@ -41,7 +41,7 @@
 
       $order_update_id = $_POST['order_id'];
       $update_payment = $_POST['update_payment'];
-      mysqli_query($conn, "UPDATE orders SET payment_status = '$update_payment' WHERE id = '$order_update_id'") or die('query failed');
+      mysqli_query($conn, "UPDATE `orders` SET payment_status = '$update_payment' WHERE id = '$order_update_id'") or die('query failed');
       $message[] = 'Trạng thái đơn hàng đã được cập nhật!';
 
    }
@@ -51,15 +51,15 @@
       $return_status = "Chờ xác nhận";
 
       $total_products= $_GET['product_name'];
-      $products = explode(', ', $total_products);//tách riêng từng sách
+      $products = explode(', ', $total_products);//tách riêng 
       for($i=0; $i<count($products); $i++){
-         $quantity = explode('-', $products[$i]);//tách sách với số lượng tương ứng cần hủy
-         $nums = mysqli_query($conn, "SELECT * FROM products WHERE name = '$quantity[0]'");
+         $quantity = explode('-', $products[$i]);//tách với số lượng tương ứng cần hủy
+         $nums = mysqli_query($conn, "SELECT * FROM `products` WHERE name = '$quantity[0]'");
          $res = mysqli_fetch_assoc($nums);
          $return_quantity = $res['quantity'] - $quantity[1];
-         mysqli_query($conn, "UPDATE products SET quantity = '$return_quantity' WHERE name = '$quantity[0]' ");
+         mysqli_query($conn, "UPDATE `products` SET quantity = '$return_quantity' WHERE name = '$quantity[0]' ");
       }
-      mysqli_query($conn, "UPDATE orders SET payment_status = '$return_status' WHERE id = '$return'") or die('query failed');
+      mysqli_query($conn, "UPDATE `orders` SET payment_status = '$return_status' WHERE id = '$return'") or die('query failed');
       header('location:admin_orders.php');
    }
 
@@ -71,13 +71,13 @@
          $products = explode(', ', $total_products);//tách riêng từng sách
          for($i=0; $i<count($products); $i++){
             $quantity = explode('-', $products[$i]);//tách sách với số lượng tương ứng cần hủy
-            $nums = mysqli_query($conn, "SELECT * FROM products WHERE name = '$quantity[0]'");
+            $nums = mysqli_query($conn, "SELECT * FROM `products` WHERE name = '$quantity[0]'");
             $res = mysqli_fetch_assoc($nums);
             $return_quantity = $quantity[1]+$res['quantity'];
-            mysqli_query($conn, "UPDATE products SET quantity = '$return_quantity' WHERE name = '$quantity[0]' ") or die('query failed');
+            mysqli_query($conn, "UPDATE `products` SET quantity = '$return_quantity' WHERE name = '$quantity[0]' ") or die('query failed');
          }
          $status = "Đã hủy";
-         mysqli_query($conn, "UPDATE orders SET payment_status = '$status' WHERE id = '$cancel_id'") or die('query failed');
+         mysqli_query($conn, "UPDATE `orders` SET payment_status = '$status' WHERE id = '$cancel_id'") or die('query failed');
          header('location:admin_orders.php');
       }else if($status=="Đã hủy"){
          $message[]="Đơn hàng đã được hủy trước đó!";
@@ -91,7 +91,7 @@
       $delete_id = $_GET['delete'];
       $status = $_GET['status'];
       if($status == "Đã hủy" || $status == "Hoàn thành"){
-         mysqli_query($conn, "DELETE FROM orders WHERE id = '$delete_id'") or die('query failed');
+         mysqli_query($conn, "DELETE FROM `orders` WHERE id = '$delete_id'") or die('query failed');
          header('location:admin_orders.php');
       }else{
          $message[]="Không thể xóa đơn hàng đang trong quá trình xử lý!";
@@ -110,6 +110,7 @@
 
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    <link rel="stylesheet" href="css/admin_style.css">
+   <link rel="stylesheet" href="css/add.css">
 
 </head>
 <body>
@@ -121,31 +122,33 @@
    <h1 class="title">Đơn đặt hàng</h1>
 
    <section class="add-products">
-   <form action="" method="post" enctype="multipart/form-data">
+   <form class="add_sup" action="" method="post" enctype="multipart/form-data">
         <h3>Thêm đơn hàng</h3>
+        <label style="font-size: 18px;" for="">Chọn khách hàng</label>
         <select name="customer_id" class="box">
          <?php
-            $select_customer= mysqli_query($conn, "SELECT * FROM customers") or die('Query failed');
+            $select_customer= mysqli_query($conn, "SELECT * FROM `customers`") or die('Query failed');
             if(mysqli_num_rows($select_customer)>0){
                while($fetch_customer=mysqli_fetch_assoc($select_customer)){
                   echo "<option value='" . $fetch_customer['id'] . "'>".$fetch_customer['name']."</option>";
                }
             }
             else{
-               echo "<option>Không có thể loại nào.</option>";
+               echo "<option>Không có khách hàng nào.</option>";
             }
          ?>
       </select>
+      <label style="font-size: 18px;" for="">Chọn tên sản phẩm</label>
       <select name="product_id" class="box">
          <?php
-            $select_product= mysqli_query($conn, "SELECT * FROM products") or die('Query failed');
+            $select_product= mysqli_query($conn, "SELECT * FROM `products`") or die('Query failed');
             if(mysqli_num_rows($select_product)>0){
                while($fetch_product=mysqli_fetch_assoc($select_product)){
                   echo "<option value='" . $fetch_product['id'] . "'>".$fetch_product['name']."</option>";
                }
             }
             else{
-               echo "<option>Không có thể loại nào.</option>";
+               echo "<option>Không có sản phẩm nào.</option>";
             }
          ?>
       </select>
@@ -155,17 +158,20 @@
       <input type="text" name="email" class="box" placeholder="Email" required>
       <input type="text" name="address" class="box" placeholder="Địa chỉ" required>
       <input type="text" name="note" class="box" placeholder="Ghi chú" required>
-      <input type="submit" value="Thêm" name="add_order" class="btn">
+      <input onclick="added_pr()" type="submit" value="Thêm" name="add_order" class="btn added_pr">
    </form>
 </section>
+<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px; margin-left: 120px; padding: 8px; font-size: 16px;" class="btn btn-info" >Thêm mới</button>
 
    <div class="box-container">
+      
       <?php
-         $select_orders = mysqli_query($conn, "SELECT * FROM orders") or die('query failed');
+         $select_orders = mysqli_query($conn, "SELECT * FROM `orders`") or die('query failed');
          if(mysqli_num_rows($select_orders) > 0){
             while($fetch_orders = mysqli_fetch_assoc($select_orders)){
       ?>
                <div style="height: -webkit-fill-available;" class="box">
+                  <p> Id đơn hàng : <span><?php echo $fetch_orders['id']; ?></span> </p>
                   <p> Id khách hàng : <span><?php echo $fetch_orders['customer_id']; ?></span> </p>
                   <p> Ngày đặt : <span><?php echo $fetch_orders['placed_on']; ?></span> </p>
                   <p> Tên : <span><?php echo $fetch_orders['name']; ?></span> </p>
@@ -207,12 +213,14 @@
             echo '<p class="empty">Không có đơn đặt hàng nào!</p>';
          }
       ?>
+      
    </div>
+   
 
 </section>
 <?php include 'footer.php'; ?>
 
 <script src="js/admin_script.js"></script>
-
+<script src="js/add.js" ></script>
 </body>
 </html>
