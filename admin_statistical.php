@@ -91,6 +91,16 @@
         </div>
     </div>
    </div>
+   <!-- CHART JS -->
+   <div style="width: 1000px; height:500px; margin-bottom: 80px" class="container">
+        <div class="title">
+            <h3>
+                Doanh số từng tháng trong năm 2023
+            </h3>
+        </div>
+        <canvas id="canvas" ></canvas>
+    </div>
+    <!-- SP bán chạy -->
    <div class="best_seller">
    <h1 class="statis_title">Thống kê sản phẩm bán chạy</h1>
    <?php if (count($best_seller) > 0): ?>
@@ -176,6 +186,7 @@
 <script src="js/admin_script.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" ></script>
+<script src="js/chartfix.js" ></script>
 </body>
 </html>
