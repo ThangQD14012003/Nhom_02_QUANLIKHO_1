@@ -18,7 +18,7 @@
         $sql_total_price = "SELECT SUM(total_price) AS Total FROM orders;";
         $total_price = $conn->query($sql_total_price); 
     }
-   $sql_out_of_stock = "SELECT * FROM products WHERE quantity = 0";
+    $sql_out_of_stock = "SELECT * FROM products WHERE quantity = 0";
    $result_stock = $conn->query($sql_out_of_stock);
    $out_of_stock = [];
     if ($result_stock->num_rows > 0) {

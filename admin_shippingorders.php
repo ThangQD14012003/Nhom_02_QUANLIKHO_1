@@ -7,7 +7,7 @@
    $admin_id = $_SESSION['admin_id']; //tạo session admin
 
    if(!isset($admin_id)){// session không tồn tại => quay lại trang đăng nhập
-      header('location:login.php');
+      header('location:login.php'); 
    };
 
    if(isset($_POST['add_shippingorder'])){//thêm mới từ submit form name='add_order'
