@@ -251,7 +251,7 @@
 
 </section>
 
-<section class="edit-product-form">
+<section class="edit-product-form" style="height:650px">
 
    <?php
       if(isset($_GET['update'])){//hiện form update từ onclick <a></a> href='update'
@@ -261,13 +261,13 @@
             while($fetch_update = mysqli_fetch_assoc($update_query)){
    ?>
                <form action="" method="post" enctype="multipart/form-data">
-                  <input type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">
-                  <input type="hidden" name="update_old_image" value="<?php echo $fetch_update['image']; ?>">
-                  <input type="hidden" name="update_trademark" value="<?php echo $fetch_update['trademark']; ?>">
-                  <input type="hidden" name="update_supplier" value="<?php echo $fetch_update['supplier_id']; ?>">
+                  <input style="margin: 4px 0;" style="margin: 4px 0;" type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">
+                  <input style="margin: 4px 0;" type="hidden" name="update_old_image" value="<?php echo $fetch_update['image']; ?>">
+                  <input style="margin: 4px 0;" type="hidden" name="update_trademark" value="<?php echo $fetch_update['trademark']; ?>">
+                  <input style="margin: 4px 0;" type="hidden" name="update_supplier" value="<?php echo $fetch_update['supplier_id']; ?>">
                   <img src="uploaded_img/<?php echo $fetch_update['image']; ?>" alt="">
-                  <input type="text" name="update_name" value="<?php echo $fetch_update['name']; ?>" class="box" required placeholder="Tên sản phẩm">
-                  <select name="update_category" class="box">
+                  <input style="margin: 4px 0;" type="text" name="update_name" value="<?php echo $fetch_update['name']; ?>" class="box" required placeholder="Tên sản phẩm">
+                  <select style="margin: 4px 0;" name="update_category" class="box">
                   <?php
                   $cate_id =  $fetch_update['cate_id'];
                       $result= mysqli_query($conn, "SELECT * FROM `categorys` WHERE id = $cate_id") or die('Query failed');
@@ -283,11 +283,11 @@
                         }
                      ?>
                   </select>
-                  <input type="number" name="update_price" value="<?php echo $fetch_update['price']; ?>" min="0" class="box" required placeholder="Giá sản phẩm">
-                  <input type="number" name="update_quantity" value="<?php echo $fetch_update['quantity']; ?>" min="0" class="box" required placeholder="Số lượng sản phẩm">
-                  <input type="text" name="update_describe" value="<?php echo $fetch_update['describes']; ?>" class="box" required placeholder="Mô tả">
-                  <input type="submit" value="update" name="update_product" class="btn">
-                  <input type="reset" value="cancel" id="close-update" class="option-btn">
+                  <input style="margin: 4px 0;" type="number" name="update_price" value="<?php echo $fetch_update['price']; ?>" min="0" class="box" required placeholder="Giá sản phẩm">
+                  <input style="margin: 4px 0;" type="number" name="update_quantity" value="<?php echo $fetch_update['quantity']; ?>" min="0" class="box" required placeholder="Số lượng sản phẩm">
+                  <input style="margin: 4px 0;" type="text" name="update_describe" value="<?php echo $fetch_update['describes']; ?>" class="box" required placeholder="Mô tả">
+                  <input style="margin: 4px 0;" type="submit" value="update" name="update_product" class="btn">
+                  <input style="margin: 4px 0;" type="reset" value="cancel" id="close-update" class="option-btn">
                </form>
    <?php
             }
