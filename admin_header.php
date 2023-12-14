@@ -1,39 +1,35 @@
-<?php
-   //nhúng vào các trang quản trị
-   if(isset($message)){
-      foreach($message as $message){//in ra thông báo trên cùng khi biến message được gán giá trị từ các trang quản trị
-         echo '
-         <div class="message">
-            <span>'.$message.'</span>
-            <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
-         </div>';
-      }
-   }
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="icon" href="uploaded_img/logo2.png">
+   
    <title>Document</title>
-   <link rel="stylesheet" href="css/admin_style.css">
+   <style>
+      .header .navbar .header_btn:hover{
+         background-color: #005490;
+         color: white;
+         border-radius: 7px;
+      }
+   </style>
 </head>
 <body>
    <header class="header">
 
-   <div class="flex">
+   <div style="max-width: 1400px; height: 70px; padding: 1rem 1rem;" class="flex">
+      <a href=""><img  style="width: 38px; height:38px; position: relative; top: -2px; left: 32px;" src="uploaded_img/logo2.png" alt=""></a>
+      <a style="text-decoration: none;" href="home.php" class="logo">Quản lý nhà kho</a>
 
-      <a href="home.php" class="logo">Quản lý nhà kho</a>
-
-      <nav class="navbar" style="min-height: 0; margin-bottom: 0px">
-         <a href="home.php">Trang chủ</a>
-         <a href="admin_products.php">Sản phẩm</a>
-         <a href="admin_category.php">Danh mục</a>
-         <a href="admin_supplier.php">Nhà cung cấp</a>
-         <a href="admin_orders.php">Đơn hàng</a>
-         <a href="admin_customers.php">Khách hàng</a>
-         <a href="admin_shippingorders.php">Đơn vận chuyển</a>
-         <a href="admin_statistical.php">Thống kê</a>
+      <nav style="min-height: unset; margin-bottom: 0px; width: 1050;" class="navbar">
+         <a class="header_btn" style="margin: 0; padding: 6px; text-decoration: none;" href="home.php">Trang chủ</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_products.php">Sản phẩm</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_category.php">Danh mục</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_supplier.php">Nhà cung cấp</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_customers.php">Khách hàng</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_orders.php">Đơn hàng</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_shippingporders.php">Đơn vận chuyển</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_statistical.php">Thống kê</a>
       </nav>
 
       <div class="icons">
@@ -42,10 +38,10 @@
       </div>
 
       <div class="account-box">
-         <p>Tên người dùng : <span><?php echo $_SESSION['admin_name']; ?></span></p>
-         <p>Email : <span><?php echo $_SESSION['admin_email']; ?></span></p>
-         <a href="logout.php" class="delete-btn">Đăng xuất</a>
-         <div><a href="login.php">Đăng nhập</a> | <a href="register.php">Đăng ký</a></div>
+         <p style="color: #005490;">Tên người dùng : <span style="color: #005490;"><?php echo $_SESSION['admin_name']; ?></span></p>
+         <p style="color: #005490;">Email : <span style="color: #005490;"><?php echo $_SESSION['admin_email']; ?></span></p>
+         <a style="background-color: #005490;"href="logout.php" class="delete-btn">Đăng xuất</a>
+         <div><a style="color: #005490;" href="login.php">Đăng nhập</a> | <a style="color: #005490;" href="register.php">Đăng ký</a></div>
       </div>
 
    </div>
