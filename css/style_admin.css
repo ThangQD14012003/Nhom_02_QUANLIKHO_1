@@ -20,11 +20,8 @@
    outline: none; border:none;
    text-decoration: none;
    transition:all .2s linear;
-   
 }
-a {
-   text-decoration: none;
-}
+
 *::selection{
    background-color: var(--purple);
    color:var(--white);
@@ -53,7 +50,7 @@ body{
 }
 
 section{
-   padding:3rem 2rem;
+   padding:1rem 2rem;
 }
 
 .title{
@@ -158,7 +155,7 @@ section{
 .header .flex{
    display: flex;
    align-items: center;
-   padding: 1rem 1rem;
+   padding:2rem;
    justify-content: space-between;
    position: relative;
    max-width: 1200px;
@@ -181,7 +178,7 @@ section{
 }
 
 .header .flex .navbar a:hover{
-   color:white;
+   color: white;
 }
 
 .header .flex .icons div{
@@ -309,22 +306,13 @@ section{
 }
 
 .show-products .box-container{
-   /* display: grid;
+   display: grid;
    grid-template-columns: repeat(4, 30rem);
    justify-content: center;
    gap:1.5rem;
    max-width: 1200px;
    margin:0 auto;
-   align-items: flex-start; */
-
-
-   display: grid;
-    grid-template-columns: repeat(auto-fit, 30rem);
-    justify-content: center;
-    gap: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    align-items: flex-start;
+   align-items: flex-start;
 }
 
 .show-products{
@@ -386,6 +374,28 @@ section{
    background-color: var(--white);
 }
 
+.edit-customer-form{
+    min-height: 100vh;
+    background-color: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:2rem;
+    overflow-y: scroll;
+    position: fixed;
+    top:0; left:0; 
+    z-index: 1200;
+    width: 100%;
+ }
+ 
+ .edit-customer-form form{
+    width: 50rem;
+    padding:2rem;
+    text-align: center;
+    border-radius: .5rem;
+    background-color: var(--white);
+ } 
+ 
 .edit-product-form form img{
    height: 25rem;
    margin-bottom: 1rem;

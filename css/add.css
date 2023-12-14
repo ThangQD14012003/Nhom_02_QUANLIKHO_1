@@ -1,0 +1,21 @@
+.add_pr{
+    display: none;
+}
+.active_add {
+    display: block;
+}
+.active_btn{
+    display: none;
+}
+.active_added {
+    display: none;
+}
+.add-cate {
+    /* width: 10000px; */
+}
+.add_sup {
+    display: none;
+}
+.active-sup {
+    display: block;
+}
