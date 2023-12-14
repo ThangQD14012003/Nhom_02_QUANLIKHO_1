@@ -145,7 +145,7 @@ $categoryList = $categoryManager->getCategoryList(isset($_GET['search']) ? $_GET
     }
    </style>
 </head>
-<body>
+<body> 
    
 <?php include 'admin_header.php'; ?>
 

@@ -305,5 +305,5 @@ if (isset($_POST['update_customer'])) {
 </script>
 <script src="js/admin_script.js"></script>
 <script src="js/add.js" ></script>
-</body>
+</body> 
 </html>

@@ -86,4 +86,4 @@
 
    <p class="credit"> &copy; Copyright  @ <?php echo date('Y'); ?> by <span style="color: #005490;"> Nhóm 2</span> </p>
 
-</section>
+</section> 
