@@ -28,7 +28,7 @@
          <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_supplier.php">Nhà cung cấp</a>
          <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_customers.php">Khách hàng</a>
          <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_orders.php">Đơn hàng</a>
-         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_shippingporders.php">Đơn vận chuyển</a>
+         <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_shippingorders.php">Đơn vận chuyển</a>
          <a class="header_btn" style="margin: 0;padding: 6px;text-decoration: none;" href="admin_statistical.php">Thống kê</a>
       </nav>
 

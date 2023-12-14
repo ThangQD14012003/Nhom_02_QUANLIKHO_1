@@ -57,7 +57,7 @@ class ShippingOrderManager
             $update_status = $_POST['update_status'];
             mysqli_query($this->conn, "UPDATE `shippingorders` SET orders_id = '$update_order_id', total_price = '$update_total_price', delivery_person = '$update_name', delivery_address = '$update_address', delivery_phone = '$update_phone', so_status = '$update_status' WHERE so_id = '$shippingorder_update_id'") or die('query failed');
             // $message[] = 'Đơn vận chuyển đã được cập nhật!';
-            header('location:admin_shippingporders.php');
+            header('location:admin_shippingorders.php');
         }
     }
 
@@ -295,8 +295,8 @@ $shippingOrderManager->deleteShippingOrder();
                <td><?php echo $fetch_shippingorders['delivery_phone']; ?></td>
                <td><?php echo $fetch_shippingorders['so_status']; ?></td>
                <td>
-                  <a style="text-decoration: none;" href="admin_shippingporders.php?update=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixx">Sửa</a> | 
-                  <a style="text-decoration: none;" href="admin_shippingporders.php?delete=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixxx" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
+                  <a style="text-decoration: none;" href="admin_shippingorders.php?update=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixx">Sửa</a> | 
+                  <a style="text-decoration: none;" href="admin_shippingorders.php?delete=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixxx" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
                </td>
             </tr>
          <?php
@@ -334,7 +334,7 @@ $shippingOrderManager->deleteShippingOrder();
                         }
                         }
                         else{
-                            echo "<option>Khdưedweông có đơn hàng nào</option>";
+                            echo "<option>Không có đơn hàng nào</option>";
                         }
                     ?>
                 </select>
@@ -361,7 +361,7 @@ $shippingOrderManager->deleteShippingOrder();
 <script>
    document.querySelector('#close-update-shipping').onclick = () =>{
       document.querySelector('.edit-shippingorder-form').style.display = 'none';
-      window.location.href = 'admin_shippingporders.php';
+      window.location.href = 'admin_shippingorders.php';
 }
 </script>
 <script src="js/admin_script.js"></script>
