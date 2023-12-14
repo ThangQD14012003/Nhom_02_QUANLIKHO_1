@@ -61,10 +61,12 @@ class SupplierController
             $query = mysqli_prepare($this->conn, "DELETE FROM `suppliers` WHERE id = ?");
             mysqli_stmt_bind_param($query, "i", $delete_id);
             mysqli_stmt_execute($query);
-
-            return 'Xóa nhà cung cấp thành công';
         } catch (Exception $e) {
-            return 'Xóa nhà cung cấp không thành công';
+            // return 'Xóa nhà cung cấp không thành công';
+            echo 
+            "<script>
+            alert('Xóa nhà cung cấp không thành công');
+            </script>";
         }
     }
 
@@ -110,6 +112,8 @@ if (isset($_POST['update_supplier'])) {
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
    <link rel="stylesheet" href="./css/style_admin.css">
    <link rel="stylesheet" href="css/add.css">
+   <link rel="icon" href="uploaded_img/logo2.png">
+
    <style>
       table {
          font-size: 15px;
@@ -164,31 +168,50 @@ if (isset($_POST['update_supplier'])) {
     .btn {
         margin-top:  0px !important;
     }
+    .fixx {
+      background-color: #f39c12;
+      padding: 5px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+    }
+    .fixxx {
+      background-color: #c0392b;
+      padding: 5px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+    }
    </style>
 </head>
 <body>
    
 <?php include 'admin_header.php'; ?>
-<h1 class="title"> Danh sách nhà cung cấp </h1>
+<span style="color: #005490;padding-top: 24px; font-weight: bold; display: flex; justify-content: center; font-size: 40px;">NHÀ CUNG CẤP</span>
 
-<section class="add-products">
+
+<section class="add-products" style="padding: 1rem 2rem;">
    <form class="add_sup" action="" method="post" enctype="multipart/form-data">
         <h3>Thêm nhà cung cấp</h3>
         <input type="text" name="name" class="box-item" placeholder="Tên nhà cung cấp" required>
         <input type="text" name="email" class="box-item" placeholder="Email" required>
         <input type="number" name="phone" class="box-item" placeholder="Số điện thoại" required>
         <input type="text" name="address" class="box-item" placeholder="Địa chỉ" required>
-        <input onclick="added_pr()" type="submit" value="Thêm" name="add_supplier" class="btn added_pr">
+        <input style="background-color: #005490;" onclick="added_pr()" type="submit" value="Thêm" name="add_supplier" class="btn added_pr">
    </form>
 </section>
 <form class="search" method="GET">
         <input type="text" name="search" placeholder="Nhập tên nhà cung cấp cần tìm..." value="<?php if(isset($_GET['search'])) echo $_GET['search'] ?>">
-        <button type="submit" class="btn">Tìm kiếm</button>
+        <button style="background-color: #005490;" type="submit" class="btn">Tìm kiếm</button>
 </form>
-<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px; margin-left: 120px; padding: 8px; font-size: 16px;" class="btn btn-info" >Thêm mới</button>
-<section class="users">
+<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px;
+    margin-left: 120px;
+    padding: 5px;
+    font-size: 16px;
+    background-color: #005490;" class="btn btn-info" >Thêm mới</button>
+<section class="users" style="padding: 1rem 0rem 3rem">
 
-   <div class="container">
+   <div class="container" >
    <?php if(isset($_GET['search'])) {  ?>
       <table class="table table-striped">
          <thead>
@@ -215,8 +238,8 @@ if (isset($_POST['update_supplier'])) {
                <td><?php echo $row['address']; ?></td>
                <td><?php echo $row['phone']; ?></td>
                <td>
-                  <a href="admin_supplier.php?update=<?php echo $row['id']; ?>" class="">Sửa</a> |
-                  <a href="admin_supplier.php?delete=<?php echo $row['id']; ?>" class="" onclick="return confirm('Xóa khách hàng này?');">Xóa</a>
+                  <a style="text-decoration: none;" href="admin_supplier.php?update=<?php echo $row['id']; ?>" class="fixx">Sửa</a> |
+                  <a style="text-decoration: none;" href="admin_supplier.php?delete=<?php echo $row['id']; ?>" class="fixxx" onclick="return confirm('Xóa khách hàng này?');">Xóa</a>
                </td>
             </tr>
          <?php
@@ -251,8 +274,8 @@ if (isset($_POST['update_supplier'])) {
                <td><?php echo $fetch_suppliers['address']; ?></td>
                <td><?php echo $fetch_suppliers['phone']; ?></td>
                <td>
-                  <a href="admin_supplier.php?update=<?php echo $fetch_suppliers['id']; ?>" class="">Sửa</a> |
-                  <a href="admin_supplier.php?delete=<?php echo $fetch_suppliers['id']; ?>" class="" onclick="return confirm('Xóa nhà cung cấp này?');">Xóa</a>
+                  <a href="admin_supplier.php?update=<?php echo $fetch_suppliers['id']; ?>" class="fixx">Sửa</a> |
+                  <a href="admin_supplier.php?delete=<?php echo $fetch_suppliers['id']; ?>" class="fixxx" onclick="return confirm('Xóa nhà cung cấp này?');">Xóa</a>
                </td>
             </tr>
          <?php
@@ -279,8 +302,8 @@ if (isset($_POST['update_supplier'])) {
                   <input type="text" name="update_email" class="box-item" value="<?php echo $fetch_update['email']?>" placeholder="Email" required>
                   <input type="number" name="update_phone" class="box-item" value="<?php echo $fetch_update['phone']?>" placeholder="Số điện thoại" required>
                   <input type="text" name="update_address" class="box-item" value="<?php echo $fetch_update['address']?>" placeholder="Địa chỉ" required>
-                  <input type="submit" value="update" name="update_supplier" class="btn btn-primary">
-                  <input type="reset" value="cancel" id="close-update-supplier" class="btn btn-warning">
+                  <input style="background-color: #005490;" type="submit" value="update" name="update_supplier" class="btn btn-primary">
+                  <input style="background-color: #005490;" type="reset" value="cancel" id="close-update-supplier" class="btn btn-warning">
                </form>
    <?php
             }
