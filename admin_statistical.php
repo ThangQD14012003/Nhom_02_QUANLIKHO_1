@@ -1,41 +1,162 @@
 <?php
 
-   include 'config.php';
+include 'config.php';
 
-   session_start();
+class AdminStatistics
+{
+    private $conn;
 
-   $admin_id = $_SESSION['admin_id']; //tạo session admin
-
-    if(!isset($admin_id)){// session không tồn tại => quay lại trang đăng nhập
-        header('location:login.php');
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+        session_start();
+        $this->checkAdminSession();
     }
-    if(isset($_POST['submit'])) {
-        $date_from = date($_POST['date_from']);
-        $date_to = date($_POST['date_to']);
-        $sql_total_price = "SELECT SUM(total_price) AS Total FROM orders WHERE placed_on between '$date_from' AND '$date_to';";
-        $total_price = $conn->query($sql_total_price);
-    } else {
-        $sql_total_price = "SELECT SUM(total_price) AS Total FROM orders;";
-        $total_price = $conn->query($sql_total_price); 
-    }
-    $sql_out_of_stock = "SELECT * FROM products WHERE quantity = 0";
-   $result_stock = $conn->query($sql_out_of_stock);
-   $out_of_stock = [];
-    if ($result_stock->num_rows > 0) {
-        while ($row = $result_stock->fetch_assoc()) {
-            $out_of_stock[] = $row;
+
+    public function checkAdminSession()
+    {
+        $admin_id = $_SESSION['admin_id'];
+        if (!isset($admin_id)) {
+            header('location:login.php');
+            exit();
         }
     }
-	$sql_best_seller = "SELECT * FROM products WHERE initial_quantity - quantity > 20";
-   	$result_seller = $conn->query($sql_best_seller);
-	$best_seller = [];
-	if ($result_seller->num_rows > 0) {
-		while ($row = $result_seller->fetch_assoc()) {
-			$best_seller[] = $row;
-		}
-	}
+
+    public function getTotalPrice()
+    {
+        if (isset($_POST['submit'])) {
+            $date_from = date($_POST['date_from']);
+            $date_to = date($_POST['date_to']);
+            $sql_total_price = "SELECT SUM(total_price) AS Total FROM orders WHERE placed_on BETWEEN '$date_from' AND '$date_to';";
+        } else {
+            $sql_total_price = "SELECT SUM(total_price) AS Total FROM orders;";
+        }
+
+        $total_price = $this->conn->query($sql_total_price);
+        return $total_price->fetch_assoc()['Total'];
+    }
+
+    public function getOutOfStockProducts()
+    {
+        $sql_out_of_stock = "SELECT * FROM products WHERE quantity = 0";
+        $result_stock = $this->conn->query($sql_out_of_stock);
+        $out_of_stock = [];
+
+        if ($result_stock->num_rows > 0) {
+            while ($row = $result_stock->fetch_assoc()) {
+                $out_of_stock[] = $row;
+            }
+        }
+
+        return $out_of_stock;
+    }
+
+    public function getBestSellingProducts()
+    {
+        $sql_best_seller = "SELECT * FROM products WHERE initial_quantity - quantity > 60";
+        $result_seller = $this->conn->query($sql_best_seller);
+        $best_seller = [];
+
+        if ($result_seller->num_rows > 0) {
+            while ($row = $result_seller->fetch_assoc()) {
+                $best_seller[] = $row;
+            }
+        }
+
+        return $best_seller;
+    }
+}
+
+class AdminStatisticsView
+{
+    private $adminStatistics;
+
+    public function __construct($adminStatistics)
+    {
+        $this->adminStatistics = $adminStatistics;
+    }
+
+    public function displayTotalPrice()
+    {
+        return number_format($this->adminStatistics->getTotalPrice(), 0, ',', '.') . ' đồng';
+    }
+
+    public function displayOutOfStockProducts()
+    {
+        $outOfStockProducts = $this->adminStatistics->getOutOfStockProducts();
+        $output = '';
+
+        if (count($outOfStockProducts) > 0) {
+            $output .= '<div class="table-responsive card mt-2">';
+            $output .= '<table style="width: 69% !important; margin: auto;" class="table table-bordered statistical_table">';
+            $output .= '<tr>';
+            $output .= '<th>ID</th>';
+            $output .= '<th>Tên sản phẩm</th>';
+            $output .= '<th>Thương hiệu</th>';
+            $output .= '<th>Mô tả</th>';
+            $output .= '<th>Số lượng còn</th>';
+            $output .= '</tr>';
+
+            foreach ($outOfStockProducts as $item) {
+                $output .= '<tr>';
+                $output .= '<td><label style="width: auto">' . $item['id'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['name'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['trademark'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['describes'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['quantity'] . '</label></td>';
+                $output .= '</tr>';
+            }
+
+            $output .= '</table>';
+            $output .= '</div>';
+        } else {
+            $output .= '<p class="alert alert-danger">Danh sách trống</p>';
+        }
+
+        return $output;
+    }
+
+    public function displayBestSellingProducts()
+    {
+        $bestSellingProducts = $this->adminStatistics->getBestSellingProducts();
+        $output = '';
+
+        if (count($bestSellingProducts) > 0) {
+            $output .= '<div class="table-responsive card mt-2">';
+            $output .= '<table style="width: 69% !important; margin: auto;" class="table table-bordered statistical_table">';
+            $output .= '<tr>';
+            $output .= '<th>ID</th>';
+            $output .= '<th>Tên sản phẩm</th>';
+            $output .= '<th>Thương hiệu</th>';
+            $output .= '<th>Mô tả</th>';
+            $output .= '<th>Số lượng sản phẩm đã bán</th>';
+            $output .= '</tr>';
+
+            foreach ($bestSellingProducts as $item) {
+                $output .= '<tr>';
+                $output .= '<td><label style="width: auto">' . $item['id'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['name'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['trademark'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . $item['describes'] . '</label></td>';
+                $output .= '<td><label style="width: auto">' . ($item['initial_quantity'] - $item['quantity']) . '</label></td>';
+                $output .= '</tr>';
+            }
+
+            $output .= '</table>';
+            $output .= '</div>';
+        } else {
+            $output .= '<p class="alert alert-danger">Danh sách trống</p>';
+        }
+
+        return $output;
+    }
+}
+
+$adminStatistics = new AdminStatistics($conn);
+$adminStatisticsView = new AdminStatisticsView($adminStatistics);
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +167,8 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    <link rel="stylesheet" href="./css/admin_style.css">
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+   <link rel="icon" href="uploaded_img/logo2.png">
+
     <style>
         .total_price {
             display:flex;
@@ -76,25 +199,26 @@
    
 <?php include 'admin_header.php'; ?>
 
-    <h1 style="margin-top: 25px;" class="title">Thống kê</h1>
-   <div class="total_money">
-    <h1 class="statis_title">Tổng doanh thu</h1>
+<span style="color: #005490;padding-top: 24px; font-weight: bold; display: flex; justify-content: center; font-size: 40px;">THỐNG KÊ</span>
+
+   <div class="total_money" style="margin-left: 40px;">
+    <h1 style="font-weight: bolder; font-size: 30px;" class="statis_title">Tổng doanh thu</h1>
     <form action="" method="POST">
         Từ ngày: <input class="input-date" type="date" name="date_from" id="" value="<?php  if(isset($_POST['submit'])) echo $date_from  ?>">
         Đến ngày: <input class="input-date" type="date" name="date_to" id="" value="<?php  if(isset($_POST['submit'])) echo $date_to  ?>">
-        <input type="submit" class="send-btn" value="Gửi" name="submit">
+        <input style="background-color: #005490;" type="submit" class="send-btn" value="Gửi" name="submit">
     </form>
     <div class="total_price">
-        <h4>Tổng doanh thu từ các sản phẩm đã bán được: </h4>
+        <h4 style="font-weight: bolder;">Tổng doanh thu từ các sản phẩm đã bán được: </h4>
         <div style="font-size: 17px;">
-            <?php  echo number_format($total_price->fetch_object()->Total, 0,',','.') . ' đồng'; ?>
+            <?php  echo $adminStatisticsView->displayTotalPrice(); ?>
         </div>
     </div>
    </div>
    <!-- CHART JS -->
    <div style="width: 1000px; height:500px; margin-bottom: 80px" class="container">
         <div class="title">
-            <h3>
+            <h3 style="font-weight: bold;">
                 Doanh số từng tháng trong năm 2023
             </h3>
         </div>
@@ -102,83 +226,13 @@
     </div>
     <!-- SP bán chạy -->
    <div class="best_seller">
-   <h1 class="statis_title">Thống kê sản phẩm bán chạy</h1>
-   <?php if (count($best_seller) > 0): ?>
-      <div class="table-responsive card mt-2">
-          <table style="width: 69% !important; margin: auto;" class="table table-bordered statistical_table">
-              <tr>
-                  <th>ID</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Thương hiệu </th>
-                  <th>Mô tả</th>
-                  <th>Số lượng sản phẩm đã bán</th>
-              </tr>
-				<?php foreach ($best_seller as $item): ?>
-					<tr>
-						<td>
-							<label style="width: auto"><?php echo $item['id']?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['name']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['trademark']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['describes']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['initial_quantity'] - $item['quantity']; ?></label>
-						</td>
-					</tr>
-				<?php endforeach; ?>
-          	</table>
-      	</div>
-    <?php else: ?>
-        <p class="alert alert-danger">Danh sách trống</p>
-    <?php endif; ?>
+   <h1 style="font-size: 30px; margin-left: 40px;font-weight: bolder;" class="statis_title">Thống kê sản phẩm bán chạy</h1>
+   <?php echo $adminStatisticsView->displayBestSellingProducts(); ?>
    </div>
-   <div style="margin-bottom: 30px;" class="out_of_stock">
-   <h1 class="statis_title">Thống kê sản phẩm đã hết trong kho</h1>
-    <?php if (count($out_of_stock) > 0): ?>
-      <div class="table-responsive card mt-2">
-          <table style="width: 69% !important; margin: auto;" class="table table-bordered statistical_table">
-              <tr>
-                  <th>ID</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Thương hiệu</th>
-                  <th>Mô tả</th>
-                  <th>Số lượng còn</th>
-              </tr>
-				<?php foreach ($out_of_stock as $item): ?>
-					<tr>
-						<td>
-							<label style="width: auto"><?php echo $item['id']?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['name']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['trademark']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['describes']; ?></label>
-						</td>
-						<td>
-							<label style="width: auto"><?php echo $item['quantity']; ?></label>
-						</td>
-					</tr>
-				<?php endforeach; ?>
-          	</table>
-      	</div>
-    <?php else: ?>
-        <p class="alert alert-danger">Danh sách trống</p>
-    <?php endif; ?>
+   <div style="margin-bottom: 40px;" class="out_of_stock">
+   <h1 style="font-size: 30px;margin-left: 30px; font-weight: bolder;" class="statis_title">Thống kê sản phẩm đã hết trong kho</h1>
+    <?php echo $adminStatisticsView->displayOutOfStockProducts(); ?>
    </div>
-
-
-
-
 
    <?php include 'footer.php'; ?>
 

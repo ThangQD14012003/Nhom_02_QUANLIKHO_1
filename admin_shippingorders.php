@@ -1,62 +1,88 @@
 <?php
 
-   include 'config.php';
+include 'config.php';
 
-   session_start();
+class ShippingOrderManager
+{
+    private $conn;
 
-   $admin_id = $_SESSION['admin_id']; //tạo session admin
-
-   if(!isset($admin_id)){// session không tồn tại => quay lại trang đăng nhập
-      header('location:login.php'); 
-   };
-
-   if(isset($_POST['add_shippingorder'])){//thêm mới từ submit form name='add_order'
-
-      $orders_id = $_POST['orders_id'];
-      $name = mysqli_real_escape_string($conn, $_POST['name']);
-      $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-      $address = mysqli_real_escape_string($conn, $_POST['address']);
-      $select_order= mysqli_query($conn, "SELECT * FROM `orders` WHERE id = $orders_id") or die('Query failed');
-      $fetch_order=mysqli_fetch_assoc($select_order);
-      $total_price = $fetch_order['total_price'];
-      $so_status = "Đang vận chuyển";
-
-      $add_shippingorder_query = mysqli_query($conn, "INSERT INTO `shippingorders`(orders_id, total_price, delivery_address, delivery_person, delivery_phone, so_status) VALUES('$orders_id', '$total_price', '$address', '$name', '$phone', '$so_status')") or die('query failed');
-
-      if($add_shippingorder_query) {
-         $message[] = 'Thêm đơn vận chuyển thành công!';
-      } else {
-         $message[] = 'Thêm đơn vận chuyển không thành công !';
-      }
-   }
-    if(isset($_POST['update_shippingorder'])){//cập nhật trạng thái đơn vận chuyển từ submit='update_order'
-        $shippingorder_update_id = $_POST['update_s_id'];
-        $update_order_id = $_POST['update_order_id'];
-        $select_order= mysqli_query($conn, "SELECT * FROM `orders` WHERE id = $update_order_id") or die('Query failed');
-        $fetch_order=mysqli_fetch_assoc($select_order);
-        $update_total_price = $fetch_order['total_price'];
-        $update_name = mysqli_real_escape_string($conn, $_POST['update_name']);
-        $update_phone = mysqli_real_escape_string($conn, $_POST['update_phone']);
-        $update_address = mysqli_real_escape_string($conn, $_POST['update_address']);
-        $update_status = $_POST['update_status'];
-        mysqli_query($conn, "UPDATE `shippingorders` SET orders_id = '$update_order_id', total_price = '$update_total_price', delivery_person = '$update_name', delivery_address = '$update_address', delivery_phone = '$update_phone', so_status = '$update_status' WHERE so_id = '$shippingorder_update_id'") or die('query failed');
-        $message[] = 'Đơn vận chuyển đã được cập nhật!';
-        header('location:admin_shippingporders.php');
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+        session_start();
     }
 
-   if(isset($_GET['delete'])){
-        $delete_id = $_GET['delete'];
-        try {
-            mysqli_query($conn, "DELETE FROM `shippingorders` WHERE so_id = '$delete_id'") or die('query failed');
-            $message[]="Xóa đơn vận chuyển thành công!";
-        } catch(Exception) {
-            $message[]="Xóa đơn vận chuyển không thành công!";
+    public function checkAdminSession()
+    {
+        $admin_id = $_SESSION['admin_id'];
+        if (!isset($admin_id)) {
+            header('location:login.php');
+            exit();
         }
     }
 
-    
+    public function addShippingOrder()
+    {
+        if (isset($_POST['add_shippingorder'])) {
+            $orders_id = $_POST['orders_id'];
+            $name = mysqli_real_escape_string($this->conn, $_POST['name']);
+            $phone = mysqli_real_escape_string($this->conn, $_POST['phone']);
+            $address = mysqli_real_escape_string($this->conn, $_POST['address']);
+            $select_order = mysqli_query($this->conn, "SELECT * FROM `orders` WHERE id = $orders_id") or die('Query failed');
+            $fetch_order = mysqli_fetch_assoc($select_order);
+            $total_price = $fetch_order['total_price'];
+            $so_status = "Đang vận chuyển";
+
+            $add_shippingorder_query = mysqli_query($this->conn, "INSERT INTO `shippingorders`(orders_id, total_price, delivery_address, delivery_person, delivery_phone, so_status) VALUES('$orders_id', '$total_price', '$address', '$name', '$phone', '$so_status')") or die('query failed');
+
+            // if ($add_shippingorder_query) {
+            //     $message[] = 'Thêm đơn vận chuyển thành công!';
+            // } else {
+            //     $message[] = 'Thêm đơn vận chuyển không thành công !';
+            // }
+        }
+    }
+
+    public function updateShippingOrder()
+    {
+        if (isset($_POST['update_shippingorder'])) {
+            $shippingorder_update_id = $_POST['update_s_id'];
+            $update_order_id = $_POST['update_order_id'];
+            $select_order = mysqli_query($this->conn, "SELECT * FROM `orders` WHERE id = $update_order_id") or die('Query failed');
+            $fetch_order = mysqli_fetch_assoc($select_order);
+            $update_total_price = $fetch_order['total_price'];
+            $update_name = mysqli_real_escape_string($this->conn, $_POST['update_name']);
+            $update_phone = mysqli_real_escape_string($this->conn, $_POST['update_phone']);
+            $update_address = mysqli_real_escape_string($this->conn, $_POST['update_address']);
+            $update_status = $_POST['update_status'];
+            mysqli_query($this->conn, "UPDATE `shippingorders` SET orders_id = '$update_order_id', total_price = '$update_total_price', delivery_person = '$update_name', delivery_address = '$update_address', delivery_phone = '$update_phone', so_status = '$update_status' WHERE so_id = '$shippingorder_update_id'") or die('query failed');
+            // $message[] = 'Đơn vận chuyển đã được cập nhật!';
+            header('location:admin_shippingporders.php');
+        }
+    }
+
+    public function deleteShippingOrder()
+    {
+        if (isset($_GET['delete'])) {
+            $delete_id = $_GET['delete'];
+            try {
+                mysqli_query($this->conn, "DELETE FROM `shippingorders` WHERE so_id = '$delete_id'") or die('query failed');
+               //  $message[] = "Xóa đơn vận chuyển thành công!";
+            } catch (Exception) {
+               //  $message[] = "Xóa đơn vận chuyển không thành công!";
+            }
+        }
+    }
+}
+
+$shippingOrderManager = new ShippingOrderManager($conn);
+$shippingOrderManager->checkAdminSession();
+$shippingOrderManager->addShippingOrder();
+$shippingOrderManager->updateShippingOrder();
+$shippingOrderManager->deleteShippingOrder();
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,7 +96,23 @@
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
    <link rel="stylesheet" href="css/admin_style.css">
    <link rel="stylesheet" href="css/add.css">
+   <link rel="icon" href="uploaded_img/logo2.png">
+
    <style>
+      .fixx {
+      background-color: #f39c12;
+      padding: 5px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+    }
+    .fixxx {
+      background-color: #c0392b;
+      padding: 5px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+    }
     table {
          font-size: 15px;
       }
@@ -94,7 +136,7 @@
          margin-bottom: 12px;
       }
       .search select {
-         padding: 10px 25px;
+         padding: 10px 10px;
          width: 100px;
          margin-right: 10px;
          font-size: 18px;
@@ -133,12 +175,13 @@
 
 <section class="orders">
 
-   <h1 class="title">Đơn vận chuyển</h1>
+<span style="color: #005490; font-weight: bold; display: flex; justify-content: center; font-size: 40px;">ĐƠN VẬN CHUYỂN</span>
 
-   <section class="add-products">
+
+   <section class="add-products" style="padding: 1rem 2rem;">
    <form class="add_sup" action="" method="post" enctype="multipart/form-data">
         <h3>Thêm đơn vận chuyển</h3>
-        <label for="">Chọn đơn hàng</label>
+        <label style="font-size: 16px;" for="">Chọn đơn hàng</label>
         <select name="orders_id" class="box">
          <?php
             $select_order= mysqli_query($conn, "SELECT * FROM `orders`") or die('Query failed');
@@ -148,17 +191,17 @@
                }
             }
             else{
-               echo "<option>Không có đơn hàng nào.</option>";
+               echo "<option>Không có đơn hàng nào</option>";
             }
          ?>
       </select>
       <input type="text" name="name" class="box" placeholder="Tên người vận chuyển" required>
       <input type="number" name="phone" class="box" placeholder="Số điện thoại" required>
       <input type="text" name="address" class="box" placeholder="Địa chỉ giao hàng" required>
-      <input type="submit" value="Thêm" name="add_shippingorder" class="btn">
+      <input style="background-color: #005490;" type="submit" value="Thêm" name="add_shippingorder" class="btn">
    </form>
 </section>
-<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px; margin-left: 120px; padding: 8px; font-size: 16px;" class="btn btn-info" >Thêm mới</button>
+<!-- <label for="">Tìm kiếm theo id đơn hàng</label> -->
 <form class="search" method="GET">
     <select name="order_id" class="box">
         <?php
@@ -169,13 +212,19 @@
             }
         }
         else{
-            echo "<option>Không có đơn hàng nào.</option>";
+            echo "<option>Không có đơn hàng nào</option>";
         }
         ?>
     </select>
-        <button type="submit" class="btn">Tìm kiếm</button>
+        <button style="background-color: #005490;" type="submit" class="btn">Tìm kiếm</button>
 </form>
-<div class="container">
+<button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px;
+    margin-left: 90px;
+    padding: 5px;
+    font-size: 16px;
+    background-color: #005490;" class="btn btn-info" >Thêm mới
+</button>
+<div class="container" style="padding: 1rem 0rem 3rem">
    <?php if(isset($_GET['order_id'])) {  ?>
       <table class="table table-striped">
          <thead>
@@ -206,8 +255,8 @@
                <td><?php echo $row['delivery_phone']; ?></td>
                <td><?php echo $row['so_status']; ?></td>
                <td>
-                  <a href="admin_shippingorders.php?update=<?php echo $row['so_id']; ?>" class="">Sửa</a> | 
-                  <a href="admin_shippingorders.php?delete=<?php echo $row['so_id']; ?>" class="" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
+                  <a style="text-decoration: none;" href="admin_shippingorders.php?update=<?php echo $row['so_id']; ?>" class="fixx">Sửa</a> | 
+                  <a style="text-decoration: none;" href="admin_shippingorders.php?delete=<?php echo $row['so_id']; ?>" class="fixxx" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
                </td>
             </tr>
          <?php
@@ -246,8 +295,8 @@
                <td><?php echo $fetch_shippingorders['delivery_phone']; ?></td>
                <td><?php echo $fetch_shippingorders['so_status']; ?></td>
                <td>
-                  <a href="admin_shippingporders.php?update=<?php echo $fetch_shippingorders['so_id']; ?>" class="">Sửa</a> | 
-                  <a href="admin_shippingporders.php?delete=<?php echo $fetch_shippingorders['so_id']; ?>" class="" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
+                  <a style="text-decoration: none;" href="admin_shippingporders.php?update=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixx">Sửa</a> | 
+                  <a style="text-decoration: none;" href="admin_shippingporders.php?delete=<?php echo $fetch_shippingorders['so_id']; ?>" class="fixxx" onclick="return confirm('Xóa đơn vận chuyển này?');">Xóa</a>
                </td>
             </tr>
          <?php
@@ -285,7 +334,7 @@
                         }
                         }
                         else{
-                            echo "<option>Không có đơn hàng nào.</option>";
+                            echo "<option>Khdưedweông có đơn hàng nào</option>";
                         }
                     ?>
                 </select>
@@ -296,8 +345,8 @@
                     <option <?php if($fetch_update['so_status'] == 'Đang vận chuyển') echo 'selected' ?> value="Đang vận chuyển">Đang vận chuyển</option>
                     <option <?php if($fetch_update['so_status'] == 'Hoàn thành') echo 'selected' ?> value="Hoàn thành">Hoàn thành</option>
                   </select>
-                  <input type="submit" value="update" name="update_shippingorder" class="btn btn-primary">
-                  <input type="reset" value="cancel" id="close-update-shipping" class="btn btn btn-warning">
+                  <input style="background-color: #005490;" type="submit" value="update" name="update_shippingorder" class="btn btn-primary">
+                  <input style="background-color: #005490;" type="reset" value="cancel" id="close-update-shipping" class="btn btn btn-warning">
                </form>
    <?php
             }

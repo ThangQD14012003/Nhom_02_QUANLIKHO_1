@@ -2,7 +2,7 @@ var add = document.querySelector('.add_pr');
 var btn = document.querySelector('.btn-info');
 function addActive() {
     add.classList.add("active_add");
-     btn.classList.add("active_btn");
+    btn.classList.add("active_btn");
 }
 
 function removeActive() {
