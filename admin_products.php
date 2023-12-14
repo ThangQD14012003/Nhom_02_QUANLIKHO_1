@@ -1,96 +1,125 @@
 <?php
 
-   include 'config.php';
+include 'config.php';
 
-   session_start();
+class ProductManager {
+    private $conn;
 
-   $admin_id = $_SESSION['admin_id']; //tạo session admin
+    public function __construct($conn) {
+        $this->conn = $conn;
+        session_start();
+    }
 
-   if(!isset($admin_id)){// session không tồn tại => quay lại trang đăng nhập
-      header('location:login.php');
-   }
+    public function checkAdminSession() {
+        $admin_id = $_SESSION['admin_id'];
+        if (!isset($admin_id)) {
+            header('location:login.php');
+            exit();
+        }
+    }
 
-   if(isset($_POST['add_product'])){//thêm sách mới từ submit form name='add_product'
+    public function addProduct() {
+        if (isset($_POST['add_product'])) {
+            $name = mysqli_real_escape_string($this->conn, $_POST['name']);
+            $trademark = mysqli_real_escape_string($this->conn, $_POST['trademark']);
+            $supplier_id = $_POST['supplier'];
+            $cate_id = $_POST['category'];
+            $price = $_POST['price'];
+            $discount = $_POST['discount'];
+            $newprice = $price * (100 - $discount) / 100;
+            $quantity = $_POST['quantity'];
+            $initial_quantity = $_POST['quantity'];
+            $describe = $_POST['describe'];
+            $image = $_FILES['image']['name'];
+            $image_size = $_FILES['image']['size'];
+            $image_tmp_name = $_FILES['image']['tmp_name'];
+            $image_folder = 'uploaded_img/' . $image;
 
-      $name = mysqli_real_escape_string($conn, $_POST['name']);
-      $trademark = mysqli_real_escape_string($conn, $_POST['trademark']);
-      $supplier_id= $_POST['supplier'];
-      $cate_id= $_POST['category'];
-      $price = $_POST['price'];
-      $discount = $_POST['discount'];
-      $newprice= $price*(100-$discount)/100;
-      $quantity = $_POST['quantity'];
-      $initial_quantity = $_POST['quantity'];
-      $describe = $_POST['describe'];
-      $image = $_FILES['image']['name'];
-      $image_size = $_FILES['image']['size'];
-      $image_tmp_name = $_FILES['image']['tmp_name'];
-      $image_folder = 'uploaded_img/'.$image;
+            $select_product_name = mysqli_query($this->conn, "SELECT name FROM `products` WHERE name = '$name'") or die('query failed');
 
-      $select_product_name = mysqli_query($conn, "SELECT name FROM `products` WHERE name = '$name'") or die('query failed');//truy vấn kiểm tra sách đã tồn tại chưa
+            if (mysqli_num_rows($select_product_name) > 0) {
+                $message[] = 'Sản phẩm đã tồn tại.';
+            } else {
+                $add_product_query = mysqli_query($this->conn, "INSERT INTO `products`(name, trademark, cate_id, supplier_id, price, discount, newprice,quantity,initial_quantity, describes, image) VALUES('$name', '$trademark', '$cate_id', '$supplier_id', '$price', '$discount', '$newprice', '$quantity', '$initial_quantity', '$describe', '$image')") or die('query failed');
 
-      if(mysqli_num_rows($select_product_name) > 0){
-         $message[] = 'Sản phẩm đã tồn tại.';
-      }else{//chưa thì thêm mới
-         $add_product_query = mysqli_query($conn, "INSERT INTO `products`(name, trademark, cate_id, supplier_id, price, discount, newprice,quantity,initial_quantity, describes, image) VALUES('$name', '$trademark', '$cate_id', '$supplier_id', '$price', '$discount', '$newprice', '$quantity', '$initial_quantity', '$describe', '$image')") or die('query failed');
-
-         if($add_product_query){
-            if($image_size > 2000000){//kiểm tra kích thước ảnh
-               $message[] = 'Kích tước ảnh quá lớn, hãy cập nhật lại ảnh!';
-            }else{
-               move_uploaded_file($image_tmp_name, $image_folder);//lưu file ảnh xuống
-               $message[] = 'Thêm sản phẩm thành công!';
+               //  if ($add_product_query) {
+               //      if ($image_size > 2000000) {
+               //          $message[] = 'Kích tước ảnh quá lớn, hãy cập nhật lại ảnh!';
+               //      } else {
+               //          move_uploaded_file($image_tmp_name, $image_folder);
+               //          $message[] = 'Thêm sản phẩm thành công!';
+               //      }
+               //  } else {
+               //      $message[] = 'Thêm sản phẩm không thành công!';
+               //  }
             }
-         }else{
-            $message[] = 'Thêm sản phẩm không thành công!';
-         }
-      }
-   }
+        }
+    }
 
-   if(isset($_GET['delete'])){//xóa sản phẩm từ onclick <a></a> href='delete'
-      $delete_id = $_GET['delete'];
-      $delete_image_query = mysqli_query($conn, "SELECT image FROM `products` WHERE id = '$delete_id'") or die('query failed');
-      $fetch_delete_image = mysqli_fetch_assoc($delete_image_query);
-      unlink('uploaded_img/'.$fetch_delete_image['image']);//xóa file ảnh của sản phẩm cần xóa
-      mysqli_query($conn, "DELETE FROM `products` WHERE id = '$delete_id'") or die('query failed');
-      header('location:admin_products.php');
-   }
+    public function deleteProduct() {
+        if (isset($_GET['delete'])) {
+            $delete_id = $_GET['delete'];
+            try {
+                $delete_image_query = mysqli_query($this->conn, "SELECT image FROM `products` WHERE id = '$delete_id'") or die('query failed');
+               //  $fetch_delete_image = mysqli_fetch_assoc($delete_image_query);
+                mysqli_query($this->conn, "DELETE FROM `products` WHERE id = '$delete_id'") or die('query failed');
+               //  unlink('uploaded_img/' . $fetch_delete_image['image']);
+               //  $message[] = "Xóa sản phẩm thành công!";
+            } catch (Exception $e) {
+                echo "<script>
+                        alert('Xóa sản phẩm không thành công do đã thêm vào đơn hàng');
+                     </script>";
+            // return 'Xóa nhà cung cấp không thành công';
 
-   if(isset($_POST['update_product'])){//cập nhật sản phẩm từ form submit name='update_product'
+                     
+            }
+        }
+      
+    }
 
-      $update_p_id = $_POST['update_p_id'];
-      $update_name = $_POST['update_name'];
-      $update_trademark = $_POST['update_trademark'];
-      $update_category = $_POST['update_category'];
-      $update_price = $_POST['update_price'];
-      $update_discount = $_POST['update_discount'];
-      $update_newprice = $update_price*(100-$update_discount)/100;
-      $update_quantity = $_POST['update_quantity'];
-      $update_describe = $_POST['update_describe'];
+    public function updateProduct() {
+        if (isset($_POST['update_product'])) {
+            $update_p_id = $_POST['update_p_id'];
+            $update_name = $_POST['update_name'];
+            $update_trademark = $_POST['update_trademark'];
+            $update_category = $_POST['update_category'];
+            $update_price = $_POST['update_price'];
+            $update_discount = $_POST['update_discount'];
+            $update_newprice = $update_price * (100 - $update_discount) / 100;
+            $update_quantity = $_POST['update_quantity'];
+            $update_describe = $_POST['update_describe'];
 
-      mysqli_query($conn, "UPDATE `products` SET name = '$update_name', trademark = '$update_trademark', cate_id='$update_category', price = '$update_price', newprice='$update_newprice', discount='$update_discount', quantity='$update_quantity', describes='$update_describe' WHERE id = '$update_p_id'") or die('query failed');
+            mysqli_query($this->conn, "UPDATE `products` SET name = '$update_name', trademark = '$update_trademark', cate_id='$update_category', price = '$update_price', newprice='$update_newprice', discount='$update_discount', quantity='$update_quantity', describes='$update_describe' WHERE id = '$update_p_id'") or die('query failed');
 
-      $update_image = $_FILES['update_image']['name'];
-      $update_image_tmp_name = $_FILES['update_image']['tmp_name'];
-      $update_image_size = $_FILES['update_image']['size'];
-      $update_folder = 'uploaded_img/'.$update_image;
-      $update_old_image = $_POST['update_old_image'];
+            $update_image = $_FILES['update_image']['name'];
+            $update_image_tmp_name = $_FILES['update_image']['tmp_name'];
+            $update_image_size = $_FILES['update_image']['size'];
+            $update_folder = 'uploaded_img/' . $update_image;
+            $update_old_image = $_POST['update_old_image'];
 
-      if(!empty($update_image)){//kiểm tra có file ảnh mới không
-         if($update_image_size > 2000000){
-            $message[] = 'image file size is too large';
-         }else{
-            mysqli_query($conn, "UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'") or die('query failed');
-            move_uploaded_file($update_image_tmp_name, $update_folder);//lưu file ảnh mới
-            unlink('uploaded_img/'.$update_old_image);//xóa file ảnh cũ
-         }
-      }
+            if (!empty($update_image)) {
+                if ($update_image_size > 2000000) {
+                    $message[] = 'image file size is too large';
+                } else {
+                    mysqli_query($this->conn, "UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'") or die('query failed');
+                    move_uploaded_file($update_image_tmp_name, $update_folder);
+                    unlink('uploaded_img/' . $update_old_image);
+                }
+            }
 
-      header('location:admin_products.php');
+            header('location:admin_products.php');
+        }
+    }
+}
 
-   }
+$productManager = new ProductManager($conn);
+$productManager->checkAdminSession();
+$productManager->addProduct();
+$productManager->deleteProduct();
+$productManager->updateProduct();
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,6 +132,8 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    <link rel="stylesheet" href="css/admin_style.css">
    <link rel="stylesheet" href="css/add.css">
+   <link rel="icon" href="uploaded_img/logo2.png">
+
    <style>
       .search {
          display: flex;
@@ -128,12 +159,14 @@
 
 <section class="add-products">
 
-   <h1 class="title">Sản  phẩm</h1>
+<span style="color: #005490; font-weight: bold; display: flex; justify-content: center; font-size: 40px;">SẢN PHẨM</span>
+
 
    <form class="add_pr" action="" method="post" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
       <input type="text" name="name" class="box" placeholder="Tên sản phẩm" required>
       <input type="text" name="trademark" class="box" placeholder="Thương hiệu" required>
+      <label style="font-size: 16px;" for="">Chọn danh mục sản phẩm</label>
       <select name="category" class="box">
          <?php
             $select_category= mysqli_query($conn, "SELECT * FROM `categorys`") or die('Query failed');
@@ -147,6 +180,8 @@
             }
          ?>
       </select>
+      <label style="font-size: 16px;" for="">Chọn nhà cung cấp</label>
+
       <select name="supplier" class="box">
          <?php
             $select_supplier= mysqli_query($conn, "SELECT * FROM `suppliers`") or die('Query failed');
@@ -164,19 +199,27 @@
       <input type="number" min="1" name="quantity" class="box" placeholder="Số lượng" required>
       <input type="text" name="describe" class="box" placeholder="Mô tả" required>
       <input type="file" name="image" accept="image/jpg, image/jpeg, image/png" class="box" required>
-      <input onclick="added_pr()" type="submit" value="Thêm" name="add_product" class="btn added_pr">
+      <input style="background-color: #005490;" onclick="added_pr()" type="submit" value="Thêm" name="add_product" class="btn added_pr">
       <!-- <input onclick="cancel_added_pr()" type="submit" value="Hủy" name="" class="btn cancel_add"> -->
    </form>
 
 </section>
 <form class="search" method="GET">
         <input type="text" name="search" placeholder="Nhập tên sản phẩm cần tìm..." value="<?php if(isset($_GET['search'])) echo $_GET['search'] ?>">
-        <button type="submit" class="btn">Tìm kiếm</button>
+        <button style="background-color: #005490;" type="submit" class="btn">Tìm kiếm</button>
 </form>
-<button onclick="addActive()" class="btn btn-info" style="margin-bottom: 10px; margin-left: 60px;">Thêm mới</button>
+<!-- <button onclick="active_sup()" id="btn-sup" style="margin-bottom: 10px; margin-left: 120px; padding: 8px; font-size: 16px;" class="btn btn-info" >Thêm mới</button> -->
+
+<button onclick="addActive()" class="btn btn-info" style="margin-bottom: 10px; margin-left: 56px; padding: 8px; font-size: 16px; background-color: #005490;">Thêm mới</button>
 <section class="show-products">
 
-   <div class="box-container">
+   <div class="box-container" style="display: grid;
+    grid-template-columns: repeat(4, 30rem);
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;">
    <?php if(isset($_GET['search'])) {  ?>
       <?php
          $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -286,8 +329,8 @@
                   <input style="margin: 4px 0;" type="number" name="update_price" value="<?php echo $fetch_update['price']; ?>" min="0" class="box" required placeholder="Giá sản phẩm">
                   <input style="margin: 4px 0;" type="number" name="update_quantity" value="<?php echo $fetch_update['quantity']; ?>" min="0" class="box" required placeholder="Số lượng sản phẩm">
                   <input style="margin: 4px 0;" type="text" name="update_describe" value="<?php echo $fetch_update['describes']; ?>" class="box" required placeholder="Mô tả">
-                  <input style="margin: 4px 0;" type="submit" value="update" name="update_product" class="btn">
-                  <input style="margin: 4px 0;" type="reset" value="cancel" id="close-update" class="option-btn">
+                  <input style="margin: 4px 0; background-color: #005490;" type="submit" value="update" name="update_product" class="btn">
+                  <input style="margin: 4px 0; background-color: #005490" type="reset" value="cancel" id="close-update" class="option-btn">
                </form>
    <?php
             }

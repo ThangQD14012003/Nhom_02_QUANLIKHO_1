@@ -73,8 +73,8 @@ if(isset($message)){
       <div class="error check_password"></div>
       <input type="password" name="cpassword" placeholder="Nhập lại mật khẩu" class="box">
       <div class="error check_cpassword"></div>
-      <input type="submit" name="submit" value="Đăng ký ngay" class="btn">
-      <p>Bạn đã có tài khoản? <a href="login.php">Đăng nhập</a></p>
+      <input style="background-color: #005490;" type="submit" name="submit" value="Đăng ký ngay" class="btn">
+      <p>Bạn đã có tài khoản? <a style="color: #005490;" href="login.php">Đăng nhập</a></p>
    </form>
 
 </div>

@@ -68,8 +68,8 @@ if(isset($message)){
       <div class="check_email"></div>
       <input type="password" name="password" placeholder="Mật khẩu" class="box">
       <div class="check_password"></div>
-      <input type="submit" name="submit" value="Đăng nhập" class="btn">
-      <p>Bạn chưa có tài khoản? <a href="register.php">Đăng ký</a></p>
+      <input style="background-color: #005490;" type="submit" name="submit" value="Đăng nhập" class="btn">
+      <p>Bạn chưa có tài khoản? <a style="color: #005490;" href="register.php">Đăng ký</a></p>
    </form>
 
 </div>
