@@ -51,17 +51,19 @@
    color:var(--purple);
 }
 </style>
-<section class="footer">
+<section class="footer" style="padding: 3rem 2rem 3rem 9rem ">
 
-   <div class="box-container">
+   <div class="box-container" >
 
-      <div class="box">
+      <div class="box" style="position: relative; top: 6px">
          <a href="home.php">Trang chủ</a>
          <a href="./admin_products.php">Sản phẩm</a>
          <a href="./admin_category.php">Danh mục</a>
       </div>
 
-      <div class="box">
+      <div class="box" style="position: relative;
+    top: 6px;
+">
          <a href="login.php">Đăng nhập</a>
          <a href="register.php">Đăng ký</a>
          <a href="orders.php">Đơn hàng</a>
@@ -69,19 +71,19 @@
 
       <div class="box">
          <h3>Thông tin liên lạc</h3>
-         <p> <i class="fas fa-phone"></i> +84123456789 </p>
-         <p> <i class="fas fa-envelope"></i> quangthang@gmail.com </p>
-         <p> <i class="fas fa-map-marker-alt"></i> Hà nội - Việt Nam </p>
+         <p>  <i style="color: #005490;" class="fas fa-phone"></i> +84123456789 </p>
+         <p> <i style="color: #005490;" class="fas fa-envelope"></i> Nhom2@gmail.com </p>
+         <p> <i style="color: #005490;" class="fas fa-map-marker-alt"></i> Hà nội - Việt Nam </p>
       </div>
 
       <div class="box">
          <h3>Theo dõi chúng tôi</h3>
-         <a href="#"> <i class="fab fa-facebook-f"></i> facebook </a>
-         <a href="#"> <i class="fab fa-instagram"></i> instagram </a>
+         <a href="#"> <i style="color: #005490;" class="fab fa-facebook-f"></i> facebook </a>
+         <a href="#"> <i style="color: #005490;" class="fab fa-instagram"></i> instagram </a>
       </div>
 
    </div>
 
-   <p class="credit"> &copy; Copyright  @ <?php echo date('Y'); ?> by <span> Nhóm 2</span> </p>
+   <p class="credit"> &copy; Copyright  @ <?php echo date('Y'); ?> by <span style="color: #005490;"> Nhóm 2</span> </p>
 
 </section>
